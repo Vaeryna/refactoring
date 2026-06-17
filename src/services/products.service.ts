@@ -1,4 +1,3 @@
-import {Customer} from "../models/customerSchema.ts";
 import {readFile} from "../utils/readFile.ts";
 import {Product} from "../models/productSchema.ts";
 
@@ -20,13 +19,13 @@ export function parseProducts(link: string): Record<string, Product> {
                     name: parts[1],
                     category: parts[2],
                     price: parseFloat(parts[3]),
-                    weight: parseFloat(parts[4] || '1.0'),
-                    taxable: parts[5] === 'true'
+                    weight: parseFloat(parts[4]),
+                    taxable: (parts[5]) === "true"
                 }
             }
         } catch (e) {
             throw e;
         }
         return products
-    } else throw new Error("No Customer Found");
+    } else throw new Error("No Product Found");
 }
