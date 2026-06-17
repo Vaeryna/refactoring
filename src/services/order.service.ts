@@ -1,5 +1,6 @@
 import {readFile} from "../utils/readFile.ts";
 import {Order, orderSchema} from "../models/ordersSchema.ts";
+import {LOYALTY_RATIO} from "../global.constants.ts";
 
 export function parseOrders(fileName: string): Record<string, Order> {
 
@@ -32,8 +33,23 @@ export function parseOrders(fileName: string): Record<string, Order> {
             time: parts[7] ? parts[7] : undefined,
         })
     }
-
     return orders
+}
 
+/**
+ * Calcul des points de fidélité de tous les clients
+ */
 
+export function calculateLoyaltyPoints(orders: Record<string, Order>): Record<string, number> {
+    const loyaltyPoints: Record<string, number> = {};
+
+    for (const o of Object.values(orders)) {
+        const cid = o.customer_id;
+        if (!loyaltyPoints[cid]) {
+            loyaltyPoints[cid] = 0;
+        }
+        loyaltyPoints[cid] += o.qty * o.unit_price * LOYALTY_RATIO;
+    }
+
+    return loyaltyPoints;
 }
