@@ -6,7 +6,7 @@ export function parsePromotion(fileName: string): Record<string, PromotionSchema
     const data = readFile(fileName).split(/\r?\n/).filter(l => l.trim());
 
     if (data.length <= 1) {
-        throw new Error(`Promotion file is empty or invalid: ${fileName}`);
+        throw new Error(`Promotions file is empty or invalid: ${fileName}`);
     }
 
     const promotions: Record<string, PromotionSchema> = {}

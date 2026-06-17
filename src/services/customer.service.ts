@@ -8,7 +8,7 @@ export function parseCustomer(fileName: string): Record<string, Customer> {
     const customers: Record<string, Customer> = {}
 
     if (data.length <= 1) {
-        throw new Error(`Customer file is empty or invalid: ${fileName}`);
+        throw new Error(`Customers file is empty or invalid: ${fileName}`);
     }
 
     for (let i = 1; i < data.length; i++) {

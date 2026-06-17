@@ -6,7 +6,7 @@ export function parseShippingZone(fileName: string): Record<string, ShippingZone
     const data = readFile(fileName).split(/\r?\n/).filter(l => l.trim());
 
     if (data.length <= 1) {
-        throw new Error(`Shipping zone file is empty or invalid: ${fileName}`);
+        throw new Error(`Shipping zones file is empty or invalid: ${fileName}`);
     }
 
     const shippingZone: Record<string, ShippingZoneSchema> = {}
