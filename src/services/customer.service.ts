@@ -1,6 +1,10 @@
 import {Customer, customerSchema} from "../models/customerSchema.ts";
 import {readFile} from "../utils/readFile.ts";
 
+/**
+ * Fonction pour transformer le fichier reçu en objet JSON
+ * @param fileName nom du fichier à transformer en objet JSON. Le chemin complet se trouve dans config.ts
+ */
 export function parseCustomer(fileName: string): Record<string, Customer> {
 
     const data = readFile(fileName).split(/\r?\n/).filter(l => l.trim());
@@ -31,6 +35,5 @@ export function parseCustomer(fileName: string): Record<string, Customer> {
     }
 
     return customers
-
-
 }
+
