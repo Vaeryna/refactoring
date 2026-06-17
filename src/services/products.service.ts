@@ -14,8 +14,8 @@ export function parseProducts(link: string): Record<string, Product> {
                 const parts = data[i].split(',');
 
                 const id: string = parts[0];
-                products[parts[0]] = {
-                    id: parts[0],
+                products[id] = {
+                    id,
                     name: parts[1],
                     category: parts[2],
                     price: parseFloat(parts[3]),

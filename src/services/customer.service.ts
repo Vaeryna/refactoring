@@ -15,7 +15,7 @@ export function parseCustomer(fileName: string): Record<string, Customer> {
 
                 const id: string = parts[0];
                 customers[id] = {
-                    id: parts[0],
+                    id,
                     name: parts[1],
                     level: parts[2] || 'BASIC',
                     shipping_zone: parts[3] || 'ZONE1',
