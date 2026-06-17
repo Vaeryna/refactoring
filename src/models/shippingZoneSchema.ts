@@ -9,4 +9,4 @@ export const shippingZoneSchema = z.object(
     }
 )
 
-export type ShippingZone = z.infer<typeof shippingZoneSchema>;
+export type ShippingZoneSchema = z.infer<typeof shippingZoneSchema>;

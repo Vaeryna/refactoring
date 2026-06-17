@@ -7,24 +7,30 @@ export function parseCustomer(fileName: string): Record<string, Customer> {
 
     const customers: Record<string, Customer> = {}
 
-    if (data != undefined) {
-        try {
-            for (let i = 1; i < data.length; i++) {
+    if (data.length <= 1) {
+        throw new Error(`Customer file is empty or invalid: ${fileName}`);
+    }
 
-                const parts = data[i].split(',');
+    for (let i = 1; i < data.length; i++) {
 
-                const id: string = parts[0];
-                customers[id] = customerSchema.parse({
-                    id,
-                    name: parts[1],
-                    level: parts[2] ? parts[2] : undefined,
-                    shipping_zone: parts[3] ? parts[3] : undefined,
-                    currency: parts[4] ? parts[4] : undefined,
-                })
-            }
-        } catch (e) {
-            throw e;
+        const parts = data[i].split(',');
+
+        const id: string = parts[0];
+
+        if (!id) {
+            throw new Error(`Missing customer id at line ${i + 1}`);
         }
-        return customers
-    } else throw new Error("No Customer Found");
+
+        customers[id] = customerSchema.parse({
+            id,
+            name: parts[1],
+            level: parts[2] ? parts[2] : undefined,
+            shipping_zone: parts[3] ? parts[3] : undefined,
+            currency: parts[4] ? parts[4] : undefined,
+        })
+    }
+
+    return customers
+
+
 }
