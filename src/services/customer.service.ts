@@ -1,9 +1,9 @@
 import {Customer} from "../models/customerSchema.ts";
 import {readFile} from "../utils/readFile.ts";
 
-export function parseCustomer(link: string): Record<string, Customer> {
+export function parseCustomer(fileName: string): Record<string, Customer> {
 
-    const data = readFile(link).split(/\r?\n/).filter(l => l.trim());
+    const data = readFile(fileName).split(/\r?\n/).filter(l => l.trim());
 
     const customers: Record<string, Customer> = {}
 
