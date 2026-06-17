@@ -1,4 +1,4 @@
-import {Customer} from "../models/customerSchema.ts";
+import {Customer, customerSchema} from "../models/customerSchema.ts";
 import {readFile} from "../utils/readFile.ts";
 
 export function parseCustomer(fileName: string): Record<string, Customer> {
@@ -14,13 +14,13 @@ export function parseCustomer(fileName: string): Record<string, Customer> {
                 const parts = data[i].split(',');
 
                 const id: string = parts[0];
-                customers[id] = {
+                customers[id] = customerSchema.parse({
                     id,
                     name: parts[1],
-                    level: parts[2] || 'BASIC',
-                    shipping_zone: parts[3] || 'ZONE1',
-                    currency: parts[4] || 'EUR'
-                }
+                    level: parts[2] ? parts[2] : undefined,
+                    shipping_zone: parts[3] ? parts[3] : undefined,
+                    currency: parts[4] ? parts[4] : undefined,
+                })
             }
         } catch (e) {
             throw e;

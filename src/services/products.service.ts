@@ -1,5 +1,5 @@
 import {readFile} from "../utils/readFile.ts";
-import {Product} from "../models/productSchema.ts";
+import {Product, productSchema} from "../models/productSchema.ts";
 
 export function parseProducts(link: string): Record<string, Product> {
 
@@ -14,14 +14,14 @@ export function parseProducts(link: string): Record<string, Product> {
                 const parts = data[i].split(',');
 
                 const id: string = parts[0];
-                products[id] = {
+                products[id] = productSchema.parse({
                     id,
                     name: parts[1],
                     category: parts[2],
                     price: parseFloat(parts[3]),
-                    weight: parseFloat(parts[4]),
-                    taxable: (parts[5]) === "true"
-                }
+                    weight: parseFloat(parts[4]) ? parseFloat(parts[4]) : undefined,
+                    taxable: (parts[5]) ? parts[5] === "true" : undefined
+                })
             }
         } catch (e) {
             throw e;
