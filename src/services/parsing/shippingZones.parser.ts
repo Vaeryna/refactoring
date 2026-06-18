@@ -1,5 +1,5 @@
-import {readFile} from "../utils/readFile.ts";
-import {ShippingZoneSchema, shippingZoneSchema} from "../models/shippingZoneSchema.ts";
+import {readFile} from "../../utils/readFile.ts";
+import {ShippingZoneSchema, shippingZoneSchema} from "../../models/shippingZoneSchema.ts";
 
 export function parseShippingZone(fileName: string): Record<string, ShippingZoneSchema> {
 

@@ -1,5 +1,5 @@
-import {readFile} from "../utils/readFile.ts";
-import {Product, productSchema} from "../models/productSchema.ts";
+import {readFile} from "../../utils/readFile.ts";
+import {Product, productSchema} from "../../models/productSchema.ts";
 
 export function parseProducts(fileName: string): Record<string, Product> {
 
