@@ -9,4 +9,4 @@ export const promotionSchema = z.object(
     }
 )
 
-export type PromotionSchema = z.infer<typeof promotionSchema>;
+export type Promotion = z.infer<typeof promotionSchema>;
