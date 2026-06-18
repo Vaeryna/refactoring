@@ -1,39 +1,45 @@
-import {Customer, customerSchema} from "../models/customerSchema.ts";
-import {readFile} from "../utils/readFile.ts";
+/**
+ * Calcul des points de fidélité de tous les clients
+ */
+
+import {type Order} from "../models/ordersSchema.ts";
+import {LOYALTY_RATIO} from "../global.constants.ts";
+
+export function calculateLoyaltyPoints(orders: Record<string, Order>): Record<string, number> {
+    const loyaltyPoints: Record<string, number> = {};
+
+    for (const o of Object.values(orders)) {
+        const cid = o.customer_id;
+        if (!loyaltyPoints[cid]) {
+            loyaltyPoints[cid] = 0;
+        }
+        loyaltyPoints[cid] += o.qty * o.unit_price * LOYALTY_RATIO;
+    }
+
+    return loyaltyPoints;
+}
+
 
 /**
- * Fonction pour transformer le fichier reçu en objet JSON
- * @param fileName nom du fichier à transformer en objet JSON. Le chemin complet se trouve dans config.ts
+ * Calcul du prix additionné de chaque commande d'un client sans les remises et promotions
+ * @param customerID ID du client
+ * @param orders toutes les commandes passées
  */
-export function parseCustomer(fileName: string): Record<string, Customer> {
 
-    const data = readFile(fileName).split(/\r?\n/).filter(l => l.trim());
+export function getBrutOrderPriceByCustomer(customerID: string, orders: Record<string, Order>) {
+    let total: number = 0
+    const ordersValues = Object.values(orders);
 
-    const customers: Record<string, Customer> = {}
+    if (!customerID) throw new Error("Customer ID is required");
+    if (!orders) throw new Error("Orders is required");
 
-    if (data.length <= 1) {
-        throw new Error(`Customers file is empty or invalid: ${fileName}`);
-    }
-
-    for (let i = 1; i < data.length; i++) {
-
-        const parts = data[i].split(',');
-
-        const id: string = parts[0];
-
-        if (!id) {
-            throw new Error(`Missing customer id at line ${i + 1}`);
+    for (const order of ordersValues) {
+        if (order.customer_id === customerID) {
+            total += order.unit_price * order.qty;
         }
-
-        customers[id] = customerSchema.parse({
-            id,
-            name: parts[1],
-            level: parts[2] ? parts[2] : undefined,
-            shipping_zone: parts[3] ? parts[3] : undefined,
-            currency: parts[4] ? parts[4] : undefined,
-        })
     }
-
-    return customers
+    return total
 }
+
+
 
