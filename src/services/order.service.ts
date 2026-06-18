@@ -1,55 +1,35 @@
-import {readFile} from "../utils/readFile.ts";
-import {Order, orderSchema} from "../models/ordersSchema.ts";
-import {LOYALTY_RATIO} from "../global.constants.ts";
+import type {Order} from "../models/ordersSchema.ts";
+import {getMorningBonus, getPromotionsDiscount} from "./discount.service.ts";
+import {Promotion} from "../models/promotionSchema.ts";
 
-export function parseOrders(fileName: string): Record<string, Order> {
 
-    const data = readFile(fileName).split(/\r?\n/).filter(l => l.trim());
-
-    const orders: Record<string, Order> = {}
-
-    if (data.length <= 1) {
-        throw new Error(`Orders file is empty or invalid: ${fileName}`);
-    }
-
-    for (let i = 1; i < data.length; i++) {
-
-        const parts = data[i].split(',');
-
-        const id: string = parts[0];
-
-        if (!id) {
-            throw new Error(`Missing order id at line ${i + 1}`);
-        }
-
-        orders[id] = orderSchema.parse({
-            id,
-            customer_id: parts[1],
-            product_id: parts[2],
-            qty: parseInt(parts[3]),
-            unit_price: parseFloat(parts[4]),
-            date: parts[5],
-            promo_code: parts[6] ? parts[6] : undefined,
-            time: parts[7] ? parts[7] : undefined,
-        })
-    }
-    return orders
+export function calculateLineSubtotal(order: Order): number {
+    return order.unit_price * order.qty;
 }
 
-/**
- * Calcul des points de fidélité de tous les clients
- */
+export function calculateLineTotalAfterDiscounts(
+    order: Order,
+    promotions: Record<string, Promotion>
+): {
+    total: number;
+    promotionDiscount: number;
+    morningBonus: number;
+} {
+    const lineSubtotal = calculateLineSubtotal(order);
 
-export function calculateLoyaltyPoints(orders: Record<string, Order>): Record<string, number> {
-    const loyaltyPoints: Record<string, number> = {};
+    const promotion = getPromotionsDiscount(order, promotions);
 
-    for (const o of Object.values(orders)) {
-        const cid = o.customer_id;
-        if (!loyaltyPoints[cid]) {
-            loyaltyPoints[cid] = 0;
-        }
-        loyaltyPoints[cid] += o.qty * o.unit_price * LOYALTY_RATIO;
-    }
+    const promotionDiscount =
+        lineSubtotal * promotion.discountRate
+        + promotion.fixedDiscount * order.qty;
 
-    return loyaltyPoints;
+    const afterPromotion = lineSubtotal - promotionDiscount;
+
+    const morningBonus = afterPromotion * getMorningBonus(order);
+
+    return {
+        total: afterPromotion - morningBonus,
+        promotionDiscount,
+        morningBonus,
+    };
 }
