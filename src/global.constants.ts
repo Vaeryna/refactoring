@@ -9,3 +9,4 @@ export const PREMIUM_THRESHOLD = 1000;
 export const LOYALTY_RATIO = 0.01;
 export const HANDLING_FEE = 2.5;
 export const MAX_DISCOUNT = 200;
+export const MORNING_DISCOUNT_RATE = 0.03;
