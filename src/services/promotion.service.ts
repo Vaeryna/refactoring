@@ -1,32 +1,22 @@
-import {readFile} from "../utils/readFile.ts";
-import {PromotionSchema, promotionSchema} from "../models/promotionSchema.ts";
-
-export function parsePromotion(fileName: string): Record<string, PromotionSchema> {
-
-    const data = readFile(fileName).split(/\r?\n/).filter(l => l.trim());
-
-    if (data.length <= 1) {
-        throw new Error(`Promotions file is empty or invalid: ${fileName}`);
-    }
-
-    const promotions: Record<string, PromotionSchema> = {}
+import {Promotion} from "../models/promotionSchema.ts";
 
 
-    for (let i = 1; i < data.length; i++) {
+/**
+ * Vérifie si un code promotionnel entré dans la commande est actif
+ * @param promoCode
+ * @param promotions
+ */
 
-        const parts = data[i].split(',');
+export function getActivePromotion(
+    promoCode: string | undefined,
+    promotions: Record<string, Promotion>
+): Promotion | undefined {
 
-        const code: string = parts[0];
+    if (!promoCode) return undefined;
 
-        if (!code) {
-            throw new Error(`Missing promotion code at line ${i + 1}`);
-        }
-        promotions[code] = promotionSchema.parse({
-            code,
-            type: parts[1],
-            value: parts[2],
-            active: parts[3] ? parts[3] !== "false" : undefined,
-        })
-    }
-    return promotions
+    const promotion = promotions[promoCode];
+
+    if (!promotion || !promotion.active) return undefined;
+
+    return promotion;
 }
