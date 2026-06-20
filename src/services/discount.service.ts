@@ -6,6 +6,7 @@ import {
     DISCOUNT_THRESHOLD_2,
     DISCOUNT_THRESHOLD_3,
     DISCOUNT_THRESHOLD_PREMIUM,
+    MAX_DISCOUNT,
     MORNING_DISCOUNT_RATE
 } from "../global.constants.ts";
 
@@ -87,10 +88,27 @@ export function calculateTierDiscount(subTotal: number, customerLevel: string): 
 
 export function calculateLoyaltyDiscount(loyaltyPoint: number): number {
     if (!loyaltyPoint) throw new Error(`Missing loyalty point`);
+    else if (loyaltyPoint > 500) return Math.min(loyaltyPoint * 0.15, 100.0);
+    else if (loyaltyPoint > 100) return Math.min(loyaltyPoint * 0.1, 50.0);
+    else return 0
+}
 
-    if (loyaltyPoint > 100) return Math.min(loyaltyPoint * 0.1, 50.0);
 
-    if (loyaltyPoint > 500) return Math.min(loyaltyPoint * 0.15, 100.0);
+export function checkMaxDiscount(discount: number, loyaltyDiscount: number) {
 
-    else return 1
+    let totalDiscount = discount + loyaltyDiscount;
+    let newLoyaltyDiscount = 0
+
+    if (totalDiscount > MAX_DISCOUNT) {
+        const ratio = MAX_DISCOUNT / (discount + loyaltyDiscount);
+        discount = discount * ratio;
+        newLoyaltyDiscount = loyaltyDiscount * ratio;
+        return {totalDiscount, newLoyaltyDiscount, discount}
+    }
+
+    return {
+        totalDiscount,
+        newLoyaltyDiscount: loyaltyDiscount,
+        discount
+    }
 }
