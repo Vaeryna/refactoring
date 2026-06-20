@@ -1,7 +1,7 @@
 import {readFile} from "../../utils/readFile.ts";
-import {ShippingZoneSchema, shippingZoneSchema} from "../../models/shippingZoneSchema.ts";
+import {ShippingZone, shippingZoneSchema} from "../../models/shippingZoneSchema.ts";
 
-export function parseShippingZone(fileName: string): Record<string, ShippingZoneSchema> {
+export function parseShippingZone(fileName: string): Record<string, ShippingZone> {
 
     const data = readFile(fileName).split(/\r?\n/).filter(l => l.trim());
 
@@ -9,7 +9,7 @@ export function parseShippingZone(fileName: string): Record<string, ShippingZone
         throw new Error(`Shipping zones file is empty or invalid: ${fileName}`);
     }
 
-    const shippingZone: Record<string, ShippingZoneSchema> = {}
+    const shippingZone: Record<string, ShippingZone> = {}
 
 
     for (let i = 1; i < data.length; i++) {
