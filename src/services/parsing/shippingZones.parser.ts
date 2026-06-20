@@ -11,7 +11,6 @@ export function parseShippingZone(fileName: string): Record<string, ShippingZone
 
     const shippingZone: Record<string, ShippingZone> = {}
 
-
     for (let i = 1; i < data.length; i++) {
 
         const parts = data[i].split(',');
@@ -30,5 +29,4 @@ export function parseShippingZone(fileName: string): Record<string, ShippingZone
     }
 
     return shippingZone
-
 }
