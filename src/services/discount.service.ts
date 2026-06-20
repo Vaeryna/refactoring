@@ -38,3 +38,18 @@ export function getMorningBonus(order: Order): number {
 
 }
 
+/**
+ * Calcul de la reduction en cas de commande en week-end
+ * Renvoie le pourcentage bonus à appliquer
+ * @param date
+ */
+
+export function getWeekEndBonus(date: string): number {
+    if (!date) throw new Error(`Missing date time : ${date}`);
+
+    const dayOfWeek = date ? new Date(date).getDay() : 0;
+
+    if (dayOfWeek === 0 || dayOfWeek === 6) return 1.05
+    else return 0
+
+}
