@@ -6,7 +6,6 @@ function createEmptySummary() {
     return {
         subtotal: 0,
         items: [],
-        weight: 0,
         promoDiscount: 0,
         morningBonus: 0,
     };
@@ -25,7 +24,6 @@ export function totalsByCustomers(orders: Record<string, Order>, promotions: Rec
         if (!summaries[customerId]) {
             summaries[customerId] = createEmptySummary();
         }
-
         const line = calculateLineTotalAfterDiscounts(order, promotions);
 
         summaries[customerId].subtotal += line.total;
