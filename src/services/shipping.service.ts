@@ -27,16 +27,22 @@ export function calculateTaxAllTaxable(taxAmount: number): number {
     return Math.round(taxAmount * TAX * 100) / 100
 }
 
-export function calculateTaxNotAllTaxable(totalTax: number, taxAmount: number, totalsByCustomer: Summary, products: Record<string, Product>) {
+export function calculateTaxNotAllTaxable(
+    totalsByCustomer: Summary,
+    products: Record<string, Product>
+): number {
+    let tax = 0;
 
     for (const item of totalsByCustomer.items) {
         const prod = products[item.product_id];
-        if (prod && prod.taxable) {
+
+        if (prod && prod.taxable !== false) {
             const itemTotal = item.qty * (prod.price || item.unit_price);
-            taxAmount += itemTotal * TAX;
+            tax += itemTotal * TAX;
         }
     }
-    return Math.round(taxAmount * 100) / 100;
+
+    return Math.round(tax * 100) / 100;
 }
 
 

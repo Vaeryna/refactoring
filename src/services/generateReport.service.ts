@@ -35,36 +35,73 @@ export function generateReport(summaries: Record<string, Summary>, customers: Re
         const currency = cust.currency || 'EUR';
 
         const subTotal = summaries[cid].subtotal;
+        let taxAmount = 0;
 
-        let discount = 0
-        let totalTax = 0
-        let taxAmount = subTotal - discount;
+        let volumeDiscount = calculateTierDiscount(subTotal, level);
 
-        const tierDiscount = calculateTierDiscount(subTotal, level)
+        const weekendBonus = getWeekEndBonus(summaries[cid].items[0]?.date || "");
 
-        const weekendBonus = getWeekEndBonus(summaries[cid].items[0]?.date || '')
+        volumeDiscount = volumeDiscount * weekendBonus;
 
-        const loyaltyPoints = getLoyaltyPointsByCustomer(cid, orders)
+        const loyaltyPoints = getLoyaltyPointsByCustomer(cid, orders);
 
-        const loyaltyDiscount = calculateLoyaltyDiscount(loyaltyPoints)
+        let loyaltyDiscount = calculateLoyaltyDiscount(loyaltyPoints);
 
-        let totalDiscount = subTotal * tierDiscount + discount * weekendBonus
+        const maxDiscountResult = checkMaxDiscount(
+            volumeDiscount,
+            loyaltyDiscount
+        );
 
-        const totalMaxDiscount = checkMaxDiscount(totalDiscount, loyaltyDiscount)
+        const totalDiscount = maxDiscountResult.totalDiscount;
+        volumeDiscount = maxDiscountResult.discount;
+        loyaltyDiscount = maxDiscountResult.newLoyaltyDiscount;
 
-        const allTaxable = checkTaxable(summaries[cid], products)
+        const taxable = subTotal - totalDiscount;
 
-        if (allTaxable) totalTax = calculateTaxAllTaxable(taxAmount)
-        else totalTax = calculateTaxNotAllTaxable(totalTax, taxAmount, summaries[cid], products)
+        const allTaxable = checkTaxable(
+            summaries[cid],
+            products
+        );
 
-        const shippingPrice = calculateShippingPrice(summaries[cid], subTotal, zone, shippingZones)
+        let totalTax = 0;
 
-        const managementPrice = getManagementPrice(summaries[cid], currency)
+        if (allTaxable) {
+            totalTax = calculateTaxAllTaxable(taxable);
+        } else {
+            totalTax = calculateTaxNotAllTaxable(
+                summaries[cid],
+                products
+            );
+        }
 
+        const shippingPrice = calculateShippingPrice(
+            summaries[cid],
+            subTotal,
+            zone,
+            shippingZones
+        );
 
-        const total = Math.round((totalDiscount + taxAmount + shippingPrice + managementPrice.handling) * managementPrice.currencyRate * 100) / 100
+        const managementPrice = getManagementPrice(
+            summaries[cid],
+            currency
+        );
+
+        const total = Math.round(
+            (
+                taxable +
+                totalTax +
+                shippingPrice +
+                managementPrice.handling
+            ) *
+            managementPrice.currencyRate *
+            100
+        ) / 100;
 
         totalPrice += total;
+        totalTaxCollected += totalTax * managementPrice.currencyRate;
+
+        totalPrice += total;
+
         totalTax += taxAmount * managementPrice.currencyRate
 
 
@@ -76,7 +113,7 @@ export function generateReport(summaries: Record<string, Summary>, customers: Re
         reports.push(`Level: ${level} | Zone: ${zone} | Currency: ${currency}`);
         reports.push(`Subtotal: ${subTotal.toFixed(2)}`);
         reports.push(`Discount: ${totalDiscount.toFixed(2)}`);
-        reports.push(`  - Volume discount: ${tierDiscount.toFixed(2)}`);
+        reports.push(`  - Volume discount: ${volumeDiscount.toFixed(2)}`);
         reports.push(`  - Loyalty discount: ${loyaltyDiscount.toFixed(2)}`);
 
         if (parseFloat(summaries[cid].morningBonus) > 0) {

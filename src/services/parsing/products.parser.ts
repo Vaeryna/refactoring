@@ -26,7 +26,7 @@ export function parseProducts(fileName: string): Record<string, Product> {
             category: parts[2],
             price: parseFloat(parts[3]),
             weight: parseFloat(parts[4]) ? parseFloat(parts[4]) : undefined,
-            taxable: (parts[5]) ? parts[5] === "true" : undefined
+            taxable: parts[5] === "true"
         })
     }
 

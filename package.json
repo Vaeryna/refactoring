@@ -11,6 +11,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx src/main.ts",
-    "test": "vitest"
+    "test": "vitest",
+    "legacy": "npx tsx legacy/legacy/orderReportLegacy.ts"
   }
 }

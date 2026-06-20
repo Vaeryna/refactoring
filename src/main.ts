@@ -8,7 +8,7 @@ import {generateReport} from "./services/generateReport.service.ts";
 import path from "path";
 import fs from "fs";
 
-function generateOrderReport() {
+export function generateOrderReport() {
 
     const customers = parseCustomer('customers.csv');
     const products = parseProducts('products.csv')
@@ -16,7 +16,7 @@ function generateOrderReport() {
     const promotions = parsePromotion('promotions.csv')
     const orders = parseOrders('orders.csv')
 
-    const summaries = totalsByCustomers(orders, promotions)
+    const summaries = totalsByCustomers(orders, promotions, products);
 
     const report = generateReport(
         summaries,
@@ -42,8 +42,9 @@ function generateOrderReport() {
         "utf-8"
     );
 
-    console.log("Report generated successfully");
 
+    console.log("Report generated successfully");
+    return report;
 }
 
 generateOrderReport();

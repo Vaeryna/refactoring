@@ -57,8 +57,7 @@ export function getWeekEndBonus(date: string): number {
     const dayOfWeek = date ? new Date(date).getDay() : 0;
 
     if (dayOfWeek === 0 || dayOfWeek === 6) return 1.05
-    else return 0
-
+    else return 1
 }
 
 /**
@@ -87,28 +86,28 @@ export function calculateTierDiscount(subTotal: number, customerLevel: string): 
 }
 
 export function calculateLoyaltyDiscount(loyaltyPoint: number): number {
-    if (!loyaltyPoint) throw new Error(`Missing loyalty point`);
-    else if (loyaltyPoint > 500) return Math.min(loyaltyPoint * 0.15, 100.0);
-    else if (loyaltyPoint > 100) return Math.min(loyaltyPoint * 0.1, 50.0);
-    else return 0
+    if (loyaltyPoint > 500) return Math.min(loyaltyPoint * 0.15, 100.0);
+    if (loyaltyPoint > 100) return Math.min(loyaltyPoint * 0.1, 50.0);
+    return 0;
 }
 
 
 export function checkMaxDiscount(discount: number, loyaltyDiscount: number) {
-
     let totalDiscount = discount + loyaltyDiscount;
-    let newLoyaltyDiscount = 0
 
     if (totalDiscount > MAX_DISCOUNT) {
-        const ratio = MAX_DISCOUNT / (discount + loyaltyDiscount);
-        discount = discount * ratio;
-        newLoyaltyDiscount = loyaltyDiscount * ratio;
-        return {totalDiscount, newLoyaltyDiscount, discount}
+        const ratio = MAX_DISCOUNT / totalDiscount;
+
+        return {
+            totalDiscount: MAX_DISCOUNT,
+            newLoyaltyDiscount: loyaltyDiscount * ratio,
+            discount: discount * ratio,
+        };
     }
 
     return {
         totalDiscount,
         newLoyaltyDiscount: loyaltyDiscount,
-        discount
-    }
+        discount,
+    };
 }
