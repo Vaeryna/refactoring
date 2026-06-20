@@ -1,7 +1,13 @@
 import {Order} from "../models/ordersSchema.ts";
 import {Promotion} from "../models/promotionSchema.ts";
 import {getActivePromotion} from "./promotion.service.ts";
-import {MORNING_DISCOUNT_RATE} from "../global.constants.ts";
+import {
+    DISCOUNT_THRESHOLD_1,
+    DISCOUNT_THRESHOLD_2,
+    DISCOUNT_THRESHOLD_3,
+    DISCOUNT_THRESHOLD_PREMIUM,
+    MORNING_DISCOUNT_RATE
+} from "../global.constants.ts";
 
 
 /**
@@ -52,4 +58,39 @@ export function getWeekEndBonus(date: string): number {
     if (dayOfWeek === 0 || dayOfWeek === 6) return 1.05
     else return 0
 
+}
+
+/**
+ * Calcul de la réduction par total de la commande
+ * @param subTotal
+ * @param customerLevel
+ */
+export function calculateTierDiscount(subTotal: number, customerLevel: string): number {
+    let discount = 0.0;
+
+    if (subTotal > 50) {
+        discount = subTotal * DISCOUNT_THRESHOLD_1;
+    }
+    if (subTotal > 100) {
+        discount = subTotal * DISCOUNT_THRESHOLD_2
+    }
+    if (subTotal > 500) {
+        discount = subTotal * DISCOUNT_THRESHOLD_3;
+    }
+    if (subTotal > 1000 && customerLevel === 'PREMIUM') {
+        discount = subTotal * DISCOUNT_THRESHOLD_PREMIUM;
+    }
+
+    return discount;
+
+}
+
+export function calculateLoyaltyDiscount(loyaltyPoint: number): number {
+    if (!loyaltyPoint) throw new Error(`Missing loyalty point`);
+
+    if (loyaltyPoint > 100) return Math.min(loyaltyPoint * 0.1, 50.0);
+
+    if (loyaltyPoint > 500) return Math.min(loyaltyPoint * 0.15, 100.0);
+
+    else return 1
 }
